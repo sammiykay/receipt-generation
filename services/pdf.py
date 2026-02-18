@@ -75,8 +75,10 @@ def generate_receipt_pdf(receipt: models.Receipt, settings: models.Setting | Non
     c.drawString(margin_x, y, f"Name: {receipt.student_name}")
     y -= 5.5 * mm
     c.drawString(margin_x, y, f"Class: {receipt.student_class}")
-    y -= 5.5 * mm
-    c.drawString(margin_x, y, f"Department: {receipt.department or '-'}")
+    department = (receipt.department or "").strip()
+    if department:
+        y -= 5.5 * mm
+        c.drawString(margin_x, y, f"Department: {department}")
     y -= 10 * mm
 
     table_left = margin_x

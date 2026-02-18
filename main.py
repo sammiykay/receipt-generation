@@ -156,7 +156,9 @@ def get_pdf(receipt_id: int, db: Session = Depends(get_db)):
     return FileResponse(
         path=pdf_path,
         media_type="application/pdf",
-        filename=f"{receipt.receipt_number}.pdf",
+        headers={
+            "Content-Disposition": f'inline; filename="{receipt.receipt_number}.pdf"'
+        },
     )
 
 

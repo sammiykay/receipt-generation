@@ -69,8 +69,19 @@ function showToast(message, type = 'ok') {
   setTimeout(() => node.remove(), 2800);
 }
 
+function toNumeric(value) {
+  if (typeof value === 'number') return Number.isFinite(value) ? value : 0;
+  if (typeof value === 'string') {
+    const cleaned = value.replace(/[^0-9.-]/g, '');
+    const parsed = Number(cleaned);
+    return Number.isFinite(parsed) ? parsed : 0;
+  }
+  const parsed = Number(value);
+  return Number.isFinite(parsed) ? parsed : 0;
+}
+
 function formatMoney(value) {
-  const num = Number(value || 0);
+  const num = toNumeric(value);
   return `${state.currencySymbol}${num.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 }
 
@@ -106,12 +117,26 @@ function hideAllViews() {
 function setActiveNav(view) {
   el.navLinks.forEach((btn) => {
     const active = btn.dataset.view === view;
-    if (active) {
-      btn.classList.add('text-primary', 'font-bold');
-      btn.classList.remove('text-slate-600', 'font-medium');
+    const isMobile = !!btn.closest('#mobile-menu');
+
+    btn.setAttribute('aria-current', active ? 'page' : 'false');
+
+    if (isMobile) {
+      if (active) {
+        btn.classList.add('text-primary', 'bg-primary/10', 'font-semibold');
+        btn.classList.remove('text-slate-700');
+      } else {
+        btn.classList.remove('text-primary', 'bg-primary/10');
+        btn.classList.add('text-slate-700', 'font-semibold');
+      }
     } else {
-      btn.classList.remove('text-primary', 'font-bold');
-      btn.classList.add('text-slate-600', 'font-medium');
+      if (active) {
+        btn.classList.add('text-primary', 'font-bold', 'border-b-2', 'border-primary', 'pb-1');
+        btn.classList.remove('text-slate-600', 'font-medium', 'border-transparent');
+      } else {
+        btn.classList.remove('text-primary', 'font-bold', 'border-primary');
+        btn.classList.add('text-slate-600', 'font-medium', 'border-b-2', 'border-transparent', 'pb-1');
+      }
     }
   });
 }
@@ -166,7 +191,7 @@ function validateAmount(input) {
 }
 
 function recalcTotal() {
-  const amounts = Array.from(el.expensesList.querySelectorAll('.expense-amount')).map((i) => Number(i.value || 0));
+  const amounts = Array.from(el.expensesList.querySelectorAll('.expense-amount')).map((i) => toNumeric(i.value));
   const total = amounts.reduce((sum, n) => sum + (Number.isNaN(n) ? 0 : n), 0);
   el.subtotalAmount.textContent = formatMoney(total);
   if (el.taxAmount) el.taxAmount.textContent = formatMoney(0);
@@ -372,7 +397,7 @@ function renderHistoryTable(rows) {
 
 function updateHistoryFooter(rows) {
   const count = rows.length;
-  const total = rows.reduce((sum, r) => sum + Number(r.total || 0), 0);
+  const total = rows.reduce((sum, r) => sum + toNumeric(r.total), 0);
   el.historySummary.textContent = `Showing ${count} receipt${count === 1 ? '' : 's'}`;
   el.footerCount.textContent = String(count);
   el.footerTotal.textContent = formatMoney(total);

@@ -18,6 +18,16 @@ body {
   font-family: "Inter", sans-serif;
 }
 
+.nav-link {
+  transition: color 0.2s ease, background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.nav-link:focus-visible {
+  outline: 2px solid #5b2bee;
+  outline-offset: 2px;
+  border-radius: 0.5rem;
+}
+
 /* Deterministic form control styling (independent of Tailwind plugins/runtime) */
 input,
 textarea,
