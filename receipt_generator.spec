@@ -7,7 +7,7 @@ hiddenimports = collect_submodules("reportlab")
 
 a = Analysis(
     ['run.py'],
-    pathex=[],
+    pathex=['.'],
     binaries=[],
     datas=[('static', 'static')],
     hiddenimports=hiddenimports,
